@@ -1,42 +1,57 @@
-import React from 'react';
-import {
-  ChakraProvider,
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-  theme,
-} from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { Logo } from './Logo';
+import React, { useState } from 'react';
+import { Button, Input, Box, Text, Center, Spinner } from '@chakra-ui/react';
 
-function App() {
+const MyComponent = () => {
+  const [loading, setLoading] = useState(false);
+  const [text, setText] = useState('');
+  const [responseData, setResponseData] = useState('');
+
+  const fetchData = () => {
+    setLoading(true);
+    fetch("http://127.0.0.1:5000/generate", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: text })
+    })
+      .then(response => response.json())
+      .then(result => {
+        setLoading(false);
+        const data = result.data;
+        setResponseData(data);
+      })
+      .catch(error => {
+        setLoading(false);
+        console.error('Error:', error);
+      });
+  }
+
+  const handleChange = (event) => {
+    setText(event.target.value);
+  }
+
   return (
-    <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
-          <ColorModeSwitcher justifySelf="flex-end" />
-          <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
-          </VStack>
-        </Grid>
+    <Center height="100vh">
+      <Box p={4} bg="gray.200" borderRadius="md">
+        <Text fontSize="xl" fontWeight="bold" mb={4}>Recipe Generator</Text>
+        <Input type="text" value={text} onChange={handleChange} mb={4} />
+        <Button colorScheme="blue" onClick={fetchData} mb={4}>
+          {loading ? (
+            <Spinner size="sm" color="white" />
+          ) : (
+            'Generate Recipe'
+          )}
+        </Button>
+        {responseData && (
+          <Box p={4} bg="white" borderRadius="md">
+            <Text fontSize="lg" fontWeight="bold">Generated Recipe:</Text>
+            <Text mt={2}>{responseData}</Text>
+          </Box>
+        )}
       </Box>
-    </ChakraProvider>
+    </Center>
   );
 }
 
-export default App;
+export default MyComponent;
