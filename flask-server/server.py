@@ -23,7 +23,7 @@ def generate_response(prompt):
 def generate():
     try:
         response = request.json
-        prompt = f"generate a simple, formatted recipe with the following ingredients: {response['text']}"
+        prompt = f"generate a simple recipe(in HTML format, all text in font open sans and all big font, with the headings in bold) with the following ingredients: {response['text']}"
         final_response = generate_response(prompt)
         return jsonify({"status": "success", "data": final_response})
     except Exception as e:
