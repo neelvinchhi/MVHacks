@@ -1,5 +1,5 @@
 import openai
-from credentials import OPENAI_KEY
+from creds import OPENAI_KEY
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
